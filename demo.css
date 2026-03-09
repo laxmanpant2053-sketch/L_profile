@@ -263,3 +263,32 @@ span {
         width: calc(100% + 8px);
     }
 }
+#menu-icon{
+    font-size:28px;
+    cursor:pointer;
+}
+
+/* hidden by default */
+.navbar{
+    display:none;
+    flex-direction:flex;
+    background:none;
+    position:absolute;
+    top:60px;
+    right:200px;
+    width:220px;
+    padding:20px;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    padding:10px;
+    font-size:18px;
+    background: transparent !important;
+}
+
+/* show menu */
+.navbar.active{
+    display:flex;
+}

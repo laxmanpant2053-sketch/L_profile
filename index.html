@@ -14,14 +14,33 @@
     <a href="#home" class="logo">Laxman <span>Pant</span></a>
     <i class='bx bx-menu' id="menu-icon"></i>
 
-    <nav class="navbar" id="navbar">
-      <a href="#home" class="active">Home</a>
-      <a href="#education">Education</a>
-      <a href="#services">Services</a>
-      <a href="#testimonials">Testimonials</a>
-      <a href="#contact">Contact</a>
-    </nav>
+   <nav class="navbar" id="navbar">
+  <a href="#home" class="active">Home</a>
+  <a href="#education">Education</a>
+  <a href="#services">Services</a>
+  <a href="#testimonials">Testimonials</a>
+  <a href="#contact">Contact</a>
+</nav>
   </header>
+  <script>
+
+const menuIcon = document.getElementById("menu-icon");
+const navbar = document.getElementById("navbar");
+const links = document.querySelectorAll("#navbar a");
+
+/* open and close menu */
+menuIcon.onclick = () => {
+    navbar.classList.toggle("active");
+};
+
+/* hide menu when clicking link */
+links.forEach(link => {
+    link.onclick = () => {
+        navbar.classList.remove("active");
+    };
+});
+
+</script>
   <script>
     const menuIcon = document.getElementById('menu-icon');
 const navbar = document.getElementById('navbar');
@@ -66,7 +85,7 @@ menuIcon.addEventListener('click', () => {
     </div>
     <div class="edu-box">
       <h3>High School</h3>
-      <p> Science Faculty with specialization in Computer Science & Mathematics.</p>
+      <p> +2 in (Specialization: Computer Science & Mathematics)</p>
     </div>
   </section>
 
