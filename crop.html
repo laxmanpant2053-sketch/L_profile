@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CropGuard — Crop Disease Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #EAF3DE; --green-100: #C0DD97; --green-200: #97C459;
+    --green-600: #3B6D11; --green-800: #27500A; --green-900: #173404;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-400: #BA7517;
+    --red-50: #FCEBEB; --red-200: #F09595; --red-600: #A32D2D;
+    --teal-50: #E1F5EE; --teal-600: #0F6E56; --teal-800: #085041;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-600: #5F5E5A; --gray-800: #444441;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5f3ee;
+    min-height: 100vh;
+    color: #1a1a18;
+  }
+
+  /* SIDEBAR */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--green-900);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar-logo .brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+  .sidebar-logo .brand span { color: var(--green-200); }
+  .sidebar-logo .tagline {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-section { padding: 20px 16px 8px; }
+  .sidebar-section-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 6px;
+    padding-left: 8px;
+  }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .sidebar-item.active { background: rgba(151,196,89,0.2); color: var(--green-100); }
+  .sidebar-item i { font-size: 18px; }
+
+  .sidebar-crops {
+    padding: 12px 16px;
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .crop-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.65);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    margin: 3px 3px 3px 0;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+  }
+  .crop-chip:hover { background: rgba(151,196,89,0.25); color: var(--green-100); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* TOP BAR */
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #e8e5df;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar-title { font-size: 16px; font-weight: 500; color: #1a1a18; }
+  .topbar-subtitle { font-size: 12px; color: var(--gray-600); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .badge-season {
+    background: var(--amber-50);
+    color: var(--amber-400);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--amber-100);
+  }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+  /* SEARCH PANEL */
+  .search-panel {
+    background: #fff;
+    border: 1px solid #e8e5df;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .search-panel h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 4px;
+    color: #1a1a18;
+  }
+  .search-panel .desc {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 20px;
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--gray-800); text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input, .form-select {
+    border: 1px solid #e0ddd6;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #1a1a18;
+    background: #fafaf8;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--green-600); background: #fff; }
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* SYMPTOM CHIPS */
+  .symptom-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .symptom-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #e0ddd6;
+    background: #fafaf8;
+    color: var(--gray-600);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .symptom-chip.selected { background: var(--green-50); border-color: var(--green-600); color: var(--green-800); }
+  .symptom-chip i { font-size: 13px; }
+
+  /* ANALYZE BUTTON */
+  .btn-analyze {
+    width: 100%;
+    background: var(--green-800);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-analyze:hover { background: var(--green-900); }
+  .btn-analyze:active { transform: scale(0.99); }
+  .btn-analyze:disabled { background: var(--gray-100); color: var(--gray-600); cursor: not-allowed; }
+
+  /* LOADING */
+  .loading-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-200), var(--green-600));
+    border-radius: 2px;
+    margin-top: 12px;
+    animation: loadbar 1.4s ease-in-out infinite;
+  }
+  @keyframes loadbar {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    51% { transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+  }
+
+  /* RESULTS */
+  .results-section { margin-top: 4px; }
+  .results-header {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #1a1a18;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .results-count {
+    background: var(--green-50);
+    color: var(--green-800);
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--green-100);
+  }
+
+  /* DISEASE CARD */
+  .disease-card {
+    background: #fff;
+    border: 1px solid #e8e5df;
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.35s ease both;
+    animation-delay: calc(var(--i, 0) * 0.08s);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .disease-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .disease-card.severity-high::before { background: #E24B4A; }
+  .disease-card.severity-medium::before { background: #EF9F27; }
+  .disease-card.severity-low::before { background: #639922; }
+
+  .disease-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .disease-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: #1a1a18;
+  }
+  .disease-scientific { font-size: 12px; font-style: italic; color: var(--gray-600); margin-top: 1px; }
+
+  .severity-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+  .severity-high .severity-badge { background: var(--red-50); color: var(--red-600); border: 1px solid var(--red-200); }
+  .severity-medium .severity-badge { background: var(--amber-50); color: var(--amber-400); border: 1px solid var(--amber-100); }
+  .severity-low .severity-badge { background: var(--green-50); color: var(--green-600); border: 1px solid var(--green-100); }
+
+  .disease-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .meta-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; color: var(--gray-600);
+  }
+  .meta-item i { font-size: 14px; }
+
+  .disease-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+  }
+  .disease-text { font-size: 13.5px; line-height: 1.65; color: #2a2a28; margin-bottom: 12px; }
+
+  .treatment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .treatment-box {
+    background: #fafaf8;
+    border: 1px solid #e8e5df;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .treatment-box-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--green-800); margin-bottom: 5px;
+  }
+  .treatment-box-text { font-size: 12.5px; line-height: 1.6; color: #3a3a38; }
+
+  .confidence-bar-wrap { margin-top: 6px; }
+  .confidence-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray-600); margin-bottom: 4px; }
+  .confidence-bar {
+    height: 5px; background: #e8e5df; border-radius: 3px; overflow: hidden;
+  }
+  .confidence-fill {
+    height: 100%; background: var(--green-600); border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-600);
+  }
+  .empty-state i { font-size: 48px; color: var(--gray-100); display: block; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e8e5df;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .stat-value { font-size: 26px; font-weight: 600; color: #1a1a18; line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--gray-600); margin-top: 5px; }
+  .stat-icon { font-size: 22px; color: var(--green-600); margin-bottom: 8px; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .treatment-grid { grid-template-columns: 1fr; }
+    .content { padding: 16px; }
+    .topbar { padding: 12px 16px; }
+  }
+
+  /* ── INPUT SUMMARY ── */
+  .input-summary {
+    background: var(--teal-50);
+    border: 1px solid #b2ddd0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+  .input-summary-title {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--teal-800);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .input-summary-grid {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+  }
+  .input-summary-item { display: flex; flex-direction: column; gap: 1px; }
+  .input-summary-item.full { flex-basis: 100%; }
+  .is-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--teal-600); font-weight: 600; }
+  .is-value { font-size: 13px; color: #1a1a18; font-weight: 500; }
+
+  /* ── SKELETON LOADER ── */
+  .skeleton-wrap {
+    background: #fff;
+    border: 1px solid #e8e5df;
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+  .sk {
+    background: linear-gradient(90deg, #e8e5df 25%, #f5f3ee 50%, #e8e5df 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .sk-tag  { height: 20px; width: 90px; border-radius: 20px; display: inline-block; }
+  .sk-title{ height: 22px; width: 55%; }
+  .sk-line { height: 13px; width: 100%; }
+  .sk-short{ width: 70%; }
+  .sk-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .sk-box  { height: 64px; border-radius: 8px; margin-bottom: 0; }
+  .skeleton-label { margin-bottom: 8px; }
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ── TOAST ── */
+  .cg-toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1a1a18; color: #fff;
+    font-size: 13.5px; font-weight: 500;
+    padding: 11px 20px; border-radius: 10px;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.25s, transform 0.25s;
+    z-index: 9999; white-space: nowrap;
+  }
+  .cg-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .cg-toast-error { background: var(--red-600); }
+  .cg-toast-info  { background: var(--teal-800); }
+
+  /* ── ERROR BOX ── */
+  .error-box {
+    background: var(--red-50); border: 1px solid var(--red-200);
+    border-radius: 12px; padding: 18px 20px; color: var(--red-600);
+  }
+  .error-box-title { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .error-box p { font-size: 13px; line-height: 1.55; margin-bottom: 4px; }
+  .error-box small { font-size: 11.5px; opacity: 0.75; }
+
+  /* ── SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
+  /* ── TREATMENT BOX COLORS ── */
+  .treatment-chemical { border-left: 3px solid #d4733a; }
+  .treatment-organic  { border-left: 3px solid var(--green-600); }
+  .treatment-chemical .treatment-box-label { color: #9a4f1e; }
+  .treatment-organic  .treatment-box-label { color: var(--green-800); }
+
+  /* ── SYMPTOM MATCH highlight ── */
+  .symptom-match-text {
+    background: var(--amber-50);
+    border-left: 3px solid var(--amber-100);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Crop<span>Guard</span></div>
+      <div class="tagline">AI Disease Diagnostics</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Navigation</div>
+      <button class="sidebar-item active" onclick="setPage('diagnose')">
+        <i class="ti ti-stethoscope"></i> Disease Finder
+      </button>
+      <button class="sidebar-item" onclick="setPage('history')">
+        <i class="ti ti-history"></i> Past Diagnoses
+      </button>
+      <button class="sidebar-item" onclick="setPage('library')">
+        <i class="ti ti-books"></i> Disease Library
+      </button>
+      <button class="sidebar-item" onclick="setPage('alerts')">
+        <i class="ti ti-alert-triangle"></i> Regional Alerts
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">My Crops</div>
+      <div class="sidebar-crops">
+        <button class="crop-chip" onclick="quickFill('Wheat')"><i class="ti ti-seeding"></i> Wheat</button>
+        <button class="crop-chip" onclick="quickFill('Rice')"><i class="ti ti-seeding"></i> Rice</button>
+        <button class="crop-chip" onclick="quickFill('Maize')"><i class="ti ti-seeding"></i> Maize</button>
+        <button class="crop-chip" onclick="quickFill('Tomato')"><i class="ti ti-apple"></i> Tomato</button>
+        <button class="crop-chip" onclick="quickFill('Potato')"><i class="ti ti-seeding"></i> Potato</button>
+        <button class="crop-chip" onclick="quickFill('Cotton')"><i class="ti ti-seeding"></i> Cotton</button>
+        <button class="crop-chip" onclick="quickFill('Soybean')"><i class="ti ti-seeding"></i> Soybean</button>
+        <button class="crop-chip" onclick="quickFill('Mustard')"><i class="ti ti-seeding"></i> Mustard</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Crop Disease Finder</div>
+        <div class="topbar-subtitle">Describe symptoms to identify diseases and get treatment advice</div>
+      </div>
+      <div class="topbar-right">
+        <span class="badge-season"><i class="ti ti-sun"></i> Kharif Season</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ti ti-database"></i></div>
+          <div class="stat-value">500+</div>
+          <div class="stat-label">Diseases in database</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ti ti-seeding"></i></div>
+          <div class="stat-value">80+</div>
+          <div class="stat-label">Crop types supported</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ti ti-target"></i></div>
+          <div class="stat-value">~92%</div>
+          <div class="stat-label">AI accuracy rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="ti ti-clock"></i></div>
+          <div class="stat-value">&lt;10s</div>
+          <div class="stat-label">Average diagnosis time</div>
+        </div>
+      </div>
+
+      <!-- SEARCH FORM -->
+      <div class="search-panel">
+        <h2>Describe Your Crop's Condition</h2>
+        <p class="desc">Fill in the details below — the more specific you are, the more accurate the diagnosis.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Crop Type *</label>
+            <input type="text" class="form-input" id="cropType" placeholder="e.g. Wheat, Rice, Tomato…" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Growth Stage</label>
+            <select class="form-select" id="growthStage">
+              <option value="">Select stage…</option>
+              <option>Seedling</option>
+              <option>Vegetative</option>
+              <option>Flowering</option>
+              <option>Fruiting / Pod fill</option>
+              <option>Maturity / Harvest</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Affected Part</label>
+            <select class="form-select" id="affectedPart">
+              <option value="">Select part…</option>
+              <option>Leaves</option>
+              <option>Stem / Stalk</option>
+              <option>Root</option>
+              <option>Fruit / Seeds</option>
+              <option>Entire plant</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Season / Climate</label>
+            <select class="form-select" id="season">
+              <option value="">Select…</option>
+              <option>Hot & Humid</option>
+              <option>Hot & Dry</option>
+              <option>Cool & Wet</option>
+              <option>Cool & Dry</option>
+              <option>Monsoon</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Visible Symptoms *</label>
+            <textarea class="form-input form-textarea" id="symptoms" placeholder="e.g. Yellow spots on leaves, brown lesions on stem, wilting, powdery white coating, stunted growth…"></textarea>
+          </div>
+        </div>
+
+        <!-- QUICK SYMPTOM CHIPS -->
+        <div class="form-group">
+          <label class="form-label">Quick Select Symptoms</label>
+          <div class="symptom-grid" id="symptomChips">
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'yellowing leaves')"><i class="ti ti-leaf"></i> Yellowing</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'brown spots')"><i class="ti ti-circle-dot"></i> Brown spots</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'wilting')"><i class="ti ti-plant-off"></i> Wilting</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'powdery coating')"><i class="ti ti-snow"></i> Powdery coating</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'water-soaked lesions')"><i class="ti ti-droplet"></i> Water-soaked spots</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'stem rot')"><i class="ti ti-x"></i> Stem rot</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'rust-colored pustules')"><i class="ti ti-palette"></i> Rust color</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'stunted growth')"><i class="ti ti-arrow-down"></i> Stunted growth</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'leaf curl')"><i class="ti ti-rotate"></i> Leaf curl</button>
+            <button class="symptom-chip" onclick="toggleSymptom(this, 'necrosis / dead tissue')"><i class="ti ti-skull"></i> Necrosis</button>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" onclick="analyzeCrop()">
+          <i class="ti ti-stethoscope"></i> Diagnose Disease
+        </button>
+        <div id="loadingBar" style="display:none;" class="loading-bar"></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results-section" id="resultsSection">
+        <div class="empty-state" id="emptyState">
+          <i class="ti ti-plant"></i>
+          <p>Enter your crop details and symptoms above,<br>then click <strong>Diagnose Disease</strong> to get AI-powered results.</p>
+        </div>
+        <div id="resultsContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Symptom chip toggle ── */
+const selectedSymptoms = new Set();
+
+function toggleSymptom(el, label) {
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    selectedSymptoms.delete(label);
+  } else {
+    el.classList.add('selected');
+    selectedSymptoms.add(label);
+  }
+}
+
+/* ── Sidebar quick-fill ── */
+function quickFill(crop) {
+  document.getElementById('cropType').value = crop;
+  document.getElementById('cropType').focus();
+}
+
+/* ── Sidebar nav ── */
+function setPage(page) {
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (page !== 'diagnose') {
+    showToast('This section is part of the full CropGuard app. Use the Disease Finder for now!', 'info');
+  }
+}
+
+/* ── Toast notification ── */
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = 'cg-toast cg-toast-' + type;
+  t.innerHTML = `<i class="ti ti-${type === 'error' ? 'alert-circle' : 'info-circle'}"></i> ${msg}`;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('visible'));
+  setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 350); }, 3800);
+}
+
+/* ── Input summary card ── */
+function buildInputSummary(crop, stage, part, season, allSymptoms) {
+  return `
+    <div class="input-summary">
+      <div class="input-summary-title"><i class="ti ti-clipboard-list"></i> Submitted Details</div>
+      <div class="input-summary-grid">
+        <div class="input-summary-item"><span class="is-label">Crop</span><span class="is-value">${crop}</span></div>
+        ${stage ? `<div class="input-summary-item"><span class="is-label">Growth Stage</span><span class="is-value">${stage}</span></div>` : ''}
+        ${part  ? `<div class="input-summary-item"><span class="is-label">Affected Part</span><span class="is-value">${part}</span></div>` : ''}
+        ${season? `<div class="input-summary-item"><span class="is-label">Season</span><span class="is-value">${season}</span></div>` : ''}
+        <div class="input-summary-item full"><span class="is-label">Symptoms</span><span class="is-value">${allSymptoms}</span></div>
+      </div>
+    </div>`;
+}
+
+/* ── Skeleton loader ── */
+function buildSkeleton() {
+  return `
+    <div class="skeleton-wrap">
+      <div class="skeleton-label"><span class="sk sk-tag"></span></div>
+      <div class="sk sk-title"></div>
+      <div class="sk sk-line"></div><div class="sk sk-line sk-short"></div>
+      <div class="sk-row">
+        <div class="sk sk-box"></div><div class="sk sk-box"></div>
+      </div>
+      <div class="sk sk-line"></div><div class="sk sk-line sk-short"></div>
+    </div>`;
+}
+
+/* ── Main analyze function ── */
+async function analyzeCrop() {
+  const crop    = document.getElementById('cropType').value.trim();
+  const symptoms= document.getElementById('symptoms').value.trim();
+  const stage   = document.getElementById('growthStage').value;
+  const part    = document.getElementById('affectedPart').value;
+  const season  = document.getElementById('season').value;
+
+  if (!crop) { showToast('Please enter a crop type.', 'error'); return; }
+  if (!symptoms && selectedSymptoms.size === 0) { showToast('Please describe or select at least one symptom.', 'error'); return; }
+
+  const allSymptoms = symptoms
+    + (selectedSymptoms.size > 0 ? (symptoms ? ', ' : '') + [...selectedSymptoms].join(', ') : '');
+
+  const btn = document.getElementById('analyzeBtn');
+  const loadingBar = document.getElementById('loadingBar');
+  const emptyState = document.getElementById('emptyState');
+  const container  = document.getElementById('resultsContainer');
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Analyzing…';
+  loadingBar.style.display = 'block';
+  emptyState.style.display = 'none';
+
+  /* Show input summary + skeleton immediately */
+  container.innerHTML = buildInputSummary(crop, stage, part, season, allSymptoms) + buildSkeleton();
+
+  /* Scroll results into view */
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const prompt = `You are an expert agronomist and plant pathologist. A farmer reports the following:
+
+Crop: ${crop}
+${stage  ? 'Growth Stage: '   + stage   : ''}
+${part   ? 'Affected Part: '  + part    : ''}
+${season ? 'Season/Climate: ' + season  : ''}
+Symptoms: ${allSymptoms}
+
+Identify the 2-3 most likely crop diseases. Respond ONLY with a valid JSON array — no markdown fences, no preamble, no trailing text:
+
+[
+  {
+    "name": "Common Disease Name",
+    "scientific": "Scientific name or pathogen",
+    "severity": "high|medium|low",
+    "confidence": 85,
+    "cause": "What causes this disease (fungal/bacterial/viral/etc)",
+    "description": "Brief description of the disease and how it spreads",
+    "symptoms_match": "Which reported symptoms match this disease and why",
+    "chemical_treatment": "Specific fungicide/pesticide recommendation with dosage if known",
+    "organic_treatment": "Organic or cultural control methods",
+    "prevention": "How to prevent this disease in future seasons"
+  }
+]`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text  = data.content.map(b => b.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+
+    let diseases;
+    try {
+      diseases = JSON.parse(clean);
+    } catch {
+      /* Try to extract JSON array from text if model added extra prose */
+      const match = clean.match(/\[[\s\S]*\]/);
+      if (match) diseases = JSON.parse(match[0]);
+      else throw new Error('Could not parse AI response as JSON.');
+    }
+
+    if (!Array.isArray(diseases) || diseases.length === 0) throw new Error('No diseases returned.');
+
+    /* Replace skeleton with real results */
+    container.innerHTML = buildInputSummary(crop, stage, part, season, allSymptoms);
+    renderResults(diseases, crop, container);
+
+  } catch (err) {
+    container.innerHTML = buildInputSummary(crop, stage, part, season, allSymptoms) + `
+      <div class="error-box">
+        <div class="error-box-title"><i class="ti ti-alert-circle"></i> Diagnosis failed</div>
+        <p>Could not complete the analysis. Please check your internet connection and try again.</p>
+        <small>${err.message}</small>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-stethoscope"></i> Diagnose Disease';
+    loadingBar.style.display = 'none';
+  }
+}
+
+/* ── Render disease cards ── */
+function renderResults(diseases, crop, container) {
+  const header = document.createElement('div');
+  header.className = 'results-header';
+  header.innerHTML = `Diagnosis Results for <em>${crop}</em> <span class="results-count">${diseases.length} disease${diseases.length !== 1 ? 's' : ''} identified</span>`;
+  container.appendChild(header);
+
+  diseases.forEach((d, i) => {
+    const card = document.createElement('div');
+    card.className = `disease-card severity-${d.severity || 'medium'}`;
+    card.style.setProperty('--i', i);
+    const sev = d.severity || 'medium';
+    const sevIcon  = sev === 'high' ? 'ti-alert-triangle' : sev === 'medium' ? 'ti-alert-circle' : 'ti-circle-check';
+    const sevLabel = sev === 'high' ? 'High Severity' : sev === 'medium' ? 'Moderate Severity' : 'Low Severity';
+    const confColor = d.confidence >= 80 ? 'var(--green-600)' : d.confidence >= 55 ? '#EF9F27' : '#E24B4A';
+
+    card.innerHTML = `
+      <div class="disease-card-header">
+        <div>
+          <div class="disease-name">${d.name}</div>
+          <div class="disease-scientific">${d.scientific || ''}</div>
+        </div>
+        <span class="severity-badge"><i class="ti ${sevIcon}"></i> ${sevLabel}</span>
+      </div>
+
+      <div class="disease-meta">
+        <span class="meta-item"><i class="ti ti-virus"></i> ${d.cause || 'Unknown cause'}</span>
+        <span class="meta-item"><i class="ti ti-chart-bar"></i> ${d.confidence || '?'}% confidence</span>
+      </div>
+
+      <div class="disease-section-label">About this Disease</div>
+      <div class="disease-text">${d.description}</div>
+
+      <div class="disease-section-label">Why it Matches Your Symptoms</div>
+      <div class="disease-text symptom-match-text">${d.symptoms_match}</div>
+
+      <div class="treatment-grid">
+        <div class="treatment-box treatment-chemical">
+          <div class="treatment-box-label"><i class="ti ti-flask"></i> Chemical Treatment</div>
+          <div class="treatment-box-text">${d.chemical_treatment}</div>
+        </div>
+        <div class="treatment-box treatment-organic">
+          <div class="treatment-box-label"><i class="ti ti-leaf"></i> Organic / Cultural</div>
+          <div class="treatment-box-text">${d.organic_treatment}</div>
+        </div>
+      </div>
+
+      <div class="disease-section-label">Prevention for Future Seasons</div>
+      <div class="disease-text" style="margin-bottom:14px;">${d.prevention}</div>
+
+      <div class="confidence-bar-wrap">
+        <div class="confidence-label">
+          <span>AI Match Confidence</span>
+          <span style="color:${confColor};font-weight:600">${d.confidence || 0}%</span>
+        </div>
+        <div class="confidence-bar">
+          <div class="confidence-fill" style="width:0%;background:${confColor}" data-width="${d.confidence || 0}%"></div>
+        </div>
+      </div>`;
+
+    container.appendChild(card);
+
+    /* Animate confidence bar after card appears */
+    setTimeout(() => {
+      const fill = card.querySelector('.confidence-fill');
+      if (fill) fill.style.width = fill.dataset.width;
+    }, 400 + i * 120);
+  });
+}
+</script>
+</body>
+</html>

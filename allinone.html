@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All-in-One Nepal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All-in-One Nepal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#eef5ff;}
+
+/* HEADER */
+header{
+background:linear-gradient(135deg,#0a58ca,#00b4d8);
+color:white;
+padding:15px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+flex-wrap:wrap;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:55px;
+height:55px;
+border-radius:12px;
+}
+
+/* BRAND */
+.brand{display:inline-block;}
+
+.brand h2{
+font-size:32px;
+font-weight:700;
+color:#ffffff;
+transition:all 0.3s ease;
+}
+
+.brand small{
+display:block;
+font-size:14px;
+color:#e0e0e0;
+transition:all 0.3s ease;
+}
+
+.brand h2:hover{
+transform:scale(1.15);
+text-shadow:0 0 10px #00eaff,0 0 20px #00eaff,0 0 40px #00eaff;
+}
+
+.brand small:hover{
+transform:scale(1.1);
+text-shadow:0 0 5px #00eaff,0 0 15px #00eaff;
+}
+
+/* NAV */
+nav{display:flex;gap:10px;flex-wrap:wrap;}
+
+nav button{
+padding:10px 14px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+background:white;
+font-weight:600;
+transition:0.3s;
+}
+
+nav button:hover{
+transform:scale(1.1);
+box-shadow:0 0 15px rgba(0,180,216,0.6);
+color:#0a58ca;
+}
+
+nav button.active{
+background:linear-gradient(135deg,#0a58ca,#00b4d8);
+color:white;
+}
+
+/* HERO (Reduced Size) */
+.hero{
+height:55vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+background:linear-gradient(135deg,#0a58ca,#00b4d8);
+color:#fff;
+margin:15px;
+border-radius:15px;
+position:relative;
+overflow:hidden;
+}
+
+/* HERO TEXT */
+.hero h2{
+font-size:42px;
+opacity:0;
+transform:translateY(30px);
+animation:fadeUp 1s ease forwards, shine 3s linear infinite;
+background:linear-gradient(90deg,#fff,#00eaff,#fff);
+background-size:200%;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.hero p{
+font-size:20px;
+margin-top:10px;
+opacity:0;
+transform:translateY(40px);
+animation:fadeSlide 1.5s ease forwards, floatText 4s infinite;
+animation-delay:0.5s;
+position:relative;
+}
+
+/* HERO ANIMATIONS */
+@keyframes fadeUp{
+to{opacity:1;transform:translateY(0);}
+}
+@keyframes fadeSlide{
+to{opacity:1;transform:translateY(0);}
+}
+@keyframes floatText{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-8px);}
+}
+@keyframes shine{
+to{background-position:200%;}
+}
+
+/* GRID (Increased Size) */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+padding:30px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:18px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+text-align:center;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card img{
+width:60px;
+height:60px;
+}
+
+/* SECTIONS */
+section{display:none;}
+section.active{display:block;}
+
+/* FOOTER (Reduced Size) */
+footer{
+background:linear-gradient(135deg,#0a58ca,#001f3f);
+color:#fff;
+text-align:center;
+padding:20px 10px;
+transition:0.4s;
+}
+
+footer:hover{
+box-shadow:0 0 30px rgba(0,234,255,0.3);
+}
+
+footer h3{
+font-size:18px;
+margin-bottom:10px;
+}
+
+footer p{
+font-size:12px;
+margin:5px 0;
+}
+
+/* SOCIAL */
+.social-icons{margin:20px 0;}
+
+.social-icons a{
+display:inline-block;
+margin:10px;
+font-size:28px;
+color:#ffffff;
+transition:0.3s;
+}
+
+.social-icons a:hover{
+transform:translateY(-8px) scale(1.2);
+text-shadow:0 0 10px #00eaff,0 0 20px #00eaff;
+}
+
+.social-icons a:nth-child(1):hover{color:#1877f2;}
+.social-icons a:nth-child(2):hover{color:#1da1f2;}
+.social-icons a:nth-child(3):hover{color:#0a66c2;}
+.social-icons a:nth-child(4):hover{color:#e4405f;}
+.social-icons a:nth-child(5):hover{color:#ff0000;}
+.social-icons a:nth-child(6):hover{color:#25d366;}
+
+/* 📱 MOBILE RESPONSIVE */
+@media(max-width:768px){
+
+header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+nav{
+width:100%;
+justify-content:center;
+}
+
+nav button{
+flex:1;
+font-size:12px;
+padding:8px;
+}
+
+.hero{
+height:45vh;
+}
+
+.hero h2{
+font-size:26px;
+}
+
+.hero p{
+font-size:14px;
+}
+
+.grid{
+grid-template-columns:1fr;
+padding:15px;
+}
+
+.card{
+padding:20px;
+}
+
+.social-icons a{
+font-size:22px;
+}
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+<img src="all.png">
+<div class="brand">
+  <h2>All-in-One Nepal</h2>
+  <small>"Everything You Need, In One Place"</small>
+</div>
+</div>
+
+<nav>
+<button onclick="show(event,'home')" class="active">Home</button>
+<button onclick="show(event,'services')">Services</button>
+<button onclick="show(event,'education')">Education</button>
+<button onclick="show(event,'jobs')">Jobs</button>
+<button onclick="show(event,'news')">News</button>
+<button onclick="show(event,'md')">Medicine</button>
+<button onclick="show(event,'tools')">Tools</button>
+<button onclick="show(event,'admin')">Admin</button>
+<button onclick="show(event,'login')">Login</button>
+
+</nav>
+</header>
+
+<!-- HOME -->
+<section id="home" class="active">
+<div class="hero">
+<h2>Welcome to All-in-One Nepal</h2>
+<p><em>"Everything you need in one place"</em></p>
+</div>
+
+<div class="grid">
+
+<div class="card" role="button" tabindex="0" aria-label="Government Services">
+<img src="https://cdn-icons-png.flaticon.com/512/2099/2099078.png" alt="Government Services icon">
+<h3>Government Services</h3>
+</div>
+
+<div class="card" role="button" tabindex="0" aria-label="Jobs">
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" alt="Jobs icon">
+<h3>Jobs</h3>
+</div>
+
+<div class="card" role="button" tabindex="0" aria-label="News">
+<img src="https://cdn-icons-png.flaticon.com/512/21/21601.png" alt="News icon">
+<h3>News</h3>
+</div>
+
+<div class="card" role="button" tabindex="0" aria-label="Tools">
+<img src="https://cdn-icons-png.flaticon.com/512/2092/2092663.png" alt="Tools icon">
+<h3>Tools</h3>
+</div>
+
+<div class="card" role="button" tabindex="0" aria-label="Education">
+<img src="https://cdn-icons-png.flaticon.com/512/167/167707.png" alt="Education icon">
+<h3>Education</h3>
+</div>
+
+</div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+<div class="grid">
+<div class="card">Website and Web app Desiging</div>
+<div class="card">Software Designing</div>
+<div class="card">Online Traning </div>
+<div class="card">AI and Others</div>
+</div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+<div class="grid">
+<div class="card">Scholarships</div>
+<div class="card">Colleges Info</div>
+<div class="card">Syllabus</div>
+<div class="card">Notes</div>
+</div>
+</section>
+
+<!-- JOBS -->
+<section id="jobs">
+<div class="grid">
+<div class="card">Government Jobs</div>
+<div class="card">Private Jobs</div>
+</div>
+</section>
+
+<!-- NEWS -->
+<section id="news">
+<div class="grid" id="newsBox"></div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+
+  <!-- HEADER -->
+  <div class="hero">
+    <h2>Smart Tools Center</h2>
+    <p>QR, AI, Apps & System Utilities in one place</p>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- QR -->
+    <a href="#qrBox" class="tool-card">
+      <div class="icon">📌</div>
+      <h3>QR Generator</h3>
+      <p>Create QR codes instantly</p>
+    </a>
+
+    <!-- AI -->
+    <a href="#" class="tool-card" onclick="alert('AI Tools Coming Soon 🤖')">
+      <div class="icon">🤖</div>
+      <h3>AI Tools</h3>
+      <p>Chat AI, text & smart tools</p>
+    </a>
+
+    <!-- APP -->
+    <a href="#" class="tool-card" onclick="alert('Application Tools Coming Soon 🧰')">
+      <div class="icon">🧰</div>
+      <h3>Application Tools</h3>
+      <p>PDF, file & document tools</p>
+    </a>
+
+    <!-- SYSTEM -->
+    <a href="#" class="tool-card" onclick="alert('System Tools Coming Soon 💻')">
+      <div class="icon">💻</div>
+      <h3>System Tools</h3>
+      <p>System utilities & performance</p>
+    </a>
+
+  </div>
+
+  <!-- QR TOOL -->
+  <div id="qrBox" class="qr-box">
+    <h2>QR Generator</h2>
+    <input id="qr" placeholder="Enter text">
+    <button onclick="qrGen()">Generate</button>
+    <div id="qrOut"></div>
+  </div>
+
+</section>
+
+<!-- LOGIN -->
+<section id="login">
+<div class="hero">
+<h2>Login Panel</h2>
+
+<input id="user" placeholder="Username"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+<div class="hero">
+<h2>Admin Dashboard</h2>
+<p>Restricted Area</p>
+
+<div class="grid">
+<div class="card">📊 Manage News</div>
+<div class="card">👥 Users</div>
+<div class="card">🧰 Settings</div>
+<div class="card">📢 Notices</div>
+</div>
+
+<button onclick="logout()">Logout</button>
+</div>
+</section><br>
+
+<!-- FOOTER -->
+<footer>
+  <h3>Contact Us</h3>
+  <p>📞 +977-9860185265 / 9847288483</p>
+
+  <div class="social-icons">
+    <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://wa.me/9779860185265" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  </div>
+
+  <p>© 2026 All-in-One Nepal</p>
+  <p>Email: allinonenepal2026@gmail.com</p>
+</footer>
+
+<script>
+let isAdmin=false;
+
+/* NAV SYSTEM */
+function show(e,id){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+if(e) e.target.classList.add('active');
+}
+
+/* LOGIN */
+function login(){
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
+
+if(u==="admin" && p==="1234"){
+isAdmin=true;
+document.getElementById("msg").innerText="Login Success!";
+show(event,'admin');
+}
+else{
+document.getElementById("msg").innerText="Wrong credentials!";
+}
+}
+
+/* LOGOUT */
+function logout(){
+isAdmin=false;
+alert("Logged out");
+show(event,'home');
+}
+
+/* QR */
+function qrGen(){
+let t=document.getElementById('qr').value;
+document.getElementById('qrOut').innerHTML=
+`<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${t}">`;
+}
+
+/* NEWS */
+const sampleNews=[
+{t:"Government News",img:"https://picsum.photos/300/200?1"},
+{t:"Internation News",img:"https://picsum.photos/300/200?2"},
+{t:"Education  Related news",img:"https://picsum.photos/300/200?3"}
+];
+
+let box=document.getElementById("newsBox");
+
+sampleNews.forEach(n=>{
+box.innerHTML+=`
+<div class="card">
+<img src="${n.img}">
+<p>${n.t}</p>
+</div>`;
+});
+</script>
+
+</body>
+</html>
